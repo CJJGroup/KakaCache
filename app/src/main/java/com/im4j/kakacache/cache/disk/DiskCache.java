@@ -1,6 +1,6 @@
-package com.im4j.kakacache.disk;
+package com.im4j.kakacache.cache.disk;
 
-import com.im4j.kakacache.Cache;
+import com.im4j.kakacache.cache.Cache;
 
 import java.io.InputStream;
 import java.util.Map;

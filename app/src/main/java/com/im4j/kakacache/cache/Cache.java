@@ -1,4 +1,4 @@
-package com.im4j.kakacache;
+package com.im4j.kakacache.cache;
 
 /**
  * 缓存接口

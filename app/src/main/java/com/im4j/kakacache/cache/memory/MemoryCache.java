@@ -1,6 +1,6 @@
-package com.im4j.kakacache.memory;
+package com.im4j.kakacache.cache.memory;
 
-import com.im4j.kakacache.Cache;
+import com.im4j.kakacache.cache.Cache;
 
 import java.util.Map;
 
