@@ -1,6 +1,7 @@
-package com.im4j.kakacache.cache.memory;
+package com.im4j.library.kakacache.cache.memory;
 
-import com.im4j.kakacache.cache.Cache;
+import com.im4j.library.kakacache.cache.Cache;
+import com.im4j.library.kakacache.exception.CacheException;
 
 import java.util.Map;
 
@@ -15,14 +16,14 @@ public interface MemoryCache extends Cache {
      * @param key
      * @return
      */
-    Object load(String key);
+    Object load(String key) throws CacheException;
 
     /**
      * 保存
      * @param key
      * @param value
      */
-    void save(String key, Object value);
+    void save(String key, Object value) throws CacheException;
 
     /**
      * 保存
@@ -30,7 +31,7 @@ public interface MemoryCache extends Cache {
      * @param value
      * @param expires 有效期（单位：秒）
      */
-    void save(String key, Object value, int expires);
+    void save(String key, Object value, int expires) throws CacheException;
 
     /**
      * 快照

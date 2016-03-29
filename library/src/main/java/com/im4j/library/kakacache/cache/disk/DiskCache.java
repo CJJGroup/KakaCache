@@ -1,6 +1,7 @@
-package com.im4j.kakacache.cache.disk;
+package com.im4j.library.kakacache.cache.disk;
 
-import com.im4j.kakacache.cache.Cache;
+import com.im4j.library.kakacache.cache.Cache;
+import com.im4j.library.kakacache.exception.CacheException;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -16,21 +17,21 @@ public interface DiskCache extends Cache {
      * @param key
      * @return
      */
-    byte[] loadBytes(String key);
+    byte[] loadBytes(String key) throws CacheException;
 
     /**
      * 读取
      * @param key
      * @return
      */
-    InputStream loadStream(String key);
+    InputStream loadStream(String key) throws CacheException;
 
     /**
      * 保存
      * @param key
      * @param value
      */
-    void save(String key, byte[] value);
+    void save(String key, byte[] value) throws CacheException;
 
     /**
      * 保存
@@ -38,14 +39,14 @@ public interface DiskCache extends Cache {
      * @param value
      * @param expires 有效期（单位：秒）
      */
-    void save(String key, byte[] value, int expires);
+    void save(String key, byte[] value, int expires) throws CacheException;
 
     /**
      * 保存
      * @param key
      * @param stream
      */
-    void save(String key, InputStream stream);
+    void save(String key, InputStream stream) throws CacheException;
 
     /**
      * 保存
@@ -53,7 +54,7 @@ public interface DiskCache extends Cache {
      * @param stream
      * @param expires 有效期（单位：秒）
      */
-    void save(String key, InputStream stream, int expires);
+    void save(String key, InputStream stream, int expires) throws CacheException;
 
     /**
      * 快照

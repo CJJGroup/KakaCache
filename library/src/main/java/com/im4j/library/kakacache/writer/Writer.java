@@ -1,4 +1,4 @@
-package com.im4j.kakacache.writer;
+package com.im4j.library.kakacache.writer;
 
 import java.io.InputStream;
 
@@ -14,5 +14,6 @@ public interface Writer<T> {
      * @return
      */
     InputStream writer(T data);
+//    void writer(T data, OutputStream stream);
 
 }

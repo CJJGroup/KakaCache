@@ -1,4 +1,6 @@
-package com.im4j.kakacache.cache;
+package com.im4j.library.kakacache.cache;
+
+import com.im4j.library.kakacache.exception.CacheException;
 
 /**
  * 缓存接口
@@ -17,12 +19,12 @@ public interface Cache {
      * 删除缓存
      * @param key
      */
-    void remove(String key);
+    void remove(String key) throws CacheException;
 
     /**
      * 清空缓存
      */
-    void clear();
+    void clear() throws CacheException;
 
     /**
      * 缓存大小

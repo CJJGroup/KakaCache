@@ -1,4 +1,4 @@
-package com.im4j.kakacache.loader;
+package com.im4j.library.kakacache.loader;
 
 import java.io.InputStream;
 
