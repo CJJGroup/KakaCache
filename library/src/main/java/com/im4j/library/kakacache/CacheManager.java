@@ -9,7 +9,6 @@ import com.im4j.library.kakacache.loader.Loader;
 import com.im4j.library.kakacache.writer.Writer;
 
 import java.io.InputStream;
-import java.util.Map;
 
 /**
  * 缓存管理器
@@ -83,12 +82,17 @@ public class CacheManager {
 
         private MemoryCache memory;
         private DiskCache disk;
-        public void memory(MemoryCache memory) {
+
+        public Builder memory(MemoryCache memory) {
             this.memory = memory;
+            return this;
         }
-        public void disk(DiskCache disk) {
+
+        public Builder disk(DiskCache disk) {
             this.disk = disk;
+            return this;
         }
+
         public CacheManager create() {
             MemoryCache memory = this.memory;
             if (memory == null) {
