@@ -53,7 +53,7 @@ public class CacheManager {
         }
 
         memory.save(key, value);
-        disk.save(key, writer.writer(value));
+        disk.save(key, value, writer);
     }
 
     /**
@@ -68,8 +68,7 @@ public class CacheManager {
         }
 
         memory.save(key, value, expires);
-        // TODO 空实现仍然会调用
-        disk.save(key, writer.writer(value), expires);
+        disk.save(key, value, writer, expires);
     }
 
 

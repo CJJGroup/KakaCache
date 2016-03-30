@@ -1,5 +1,7 @@
 package com.im4j.library.kakacache.writer;
 
+import com.im4j.library.kakacache.cache.disk.DiskCache;
+
 import java.io.InputStream;
 
 /**
@@ -9,11 +11,12 @@ import java.io.InputStream;
 public interface Writer<T> {
 
     /**
-     * 读取
+     * 写入
      * @param data
+     * @param disk
+     * @param expires 有效期（单位：秒）
      * @return
      */
-    InputStream writer(T data);
-//    void writer(T data, OutputStream stream);
+    InputStream writer(T data, DiskCache disk, int expires);
 
 }

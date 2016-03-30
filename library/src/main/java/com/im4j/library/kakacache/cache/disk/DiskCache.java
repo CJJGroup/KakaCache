@@ -2,6 +2,7 @@ package com.im4j.library.kakacache.cache.disk;
 
 import com.im4j.library.kakacache.cache.Cache;
 import com.im4j.library.kakacache.exception.CacheException;
+import com.im4j.library.kakacache.writer.Writer;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -55,6 +56,23 @@ public interface DiskCache extends Cache {
      * @param expires 有效期（单位：秒）
      */
     void save(String key, InputStream stream, int expires) throws CacheException;
+
+    /**
+     * 保存
+     * @param key
+     * @param value
+     * @param writer
+     */
+    <T> void save(String key, T value, Writer<T> writer) throws CacheException;
+
+    /**
+     * 保存
+     * @param key
+     * @param value
+     * @param writer
+     * @param expires 有效期（单位：秒）
+     */
+    <T> void save(String key, T value, Writer<T> writer, int expires) throws CacheException;
 
     /**
      * 快照

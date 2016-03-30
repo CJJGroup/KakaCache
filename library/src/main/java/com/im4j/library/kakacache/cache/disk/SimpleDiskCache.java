@@ -2,6 +2,7 @@ package com.im4j.library.kakacache.cache.disk;
 
 import com.im4j.library.kakacache.cache.memory.MemoryCache;
 import com.im4j.library.kakacache.exception.CacheException;
+import com.im4j.library.kakacache.writer.Writer;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -31,6 +32,12 @@ public class SimpleDiskCache implements DiskCache {
     }
     @Override
     public void save(String key, InputStream stream, int expires) throws CacheException {
+    }
+    @Override
+    public <T> void save(String key, T value, Writer<T> writer) throws CacheException {
+    }
+    @Override
+    public <T> void save(String key, T value, Writer<T> writer, int expires) throws CacheException {
     }
     @Override
     public Map<String, InputStream> snapshot() {
