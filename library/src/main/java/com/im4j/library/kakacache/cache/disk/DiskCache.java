@@ -1,6 +1,5 @@
 package com.im4j.library.kakacache.cache.disk;
 
-import com.im4j.library.kakacache.cache.Cache;
 import com.im4j.library.kakacache.exception.CacheException;
 import com.im4j.library.kakacache.writer.Writer;
 
@@ -11,7 +10,7 @@ import java.util.Map;
  * 磁盘缓存
  * @author alafighting 2016-03
  */
-public interface DiskCache extends Cache {
+public interface DiskCache {
 
     /**
      * 读取
@@ -79,5 +78,31 @@ public interface DiskCache extends Cache {
      * @return
      */
     Map<String, InputStream> snapshot();
+
+
+
+    /**
+     * 是否过期
+     * @param key
+     * @return
+     */
+    boolean isExpired(String key);
+
+    /**
+     * 删除缓存
+     * @param key
+     */
+    void remove(String key) throws CacheException;
+
+    /**
+     * 清空缓存
+     */
+    void clear() throws CacheException;
+
+    /**
+     * 缓存大小
+     * @return 单位:byte
+     */
+    long size();
 
 }
