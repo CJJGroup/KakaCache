@@ -8,8 +8,9 @@ import java.util.Map;
  * 简单空实现
  * @version 0.1 king 2016-03
  */
-public class SimpleMemoryCache implements MemoryCache {
+public class SimpleMemoryCache implements IMemoryCache {
 
+    private boolean isclosed;
     @Override
     public Object load(String key) throws CacheException {
         return null;
@@ -24,7 +25,18 @@ public class SimpleMemoryCache implements MemoryCache {
     public Map<String, Object> snapshot() {
         return null;
     }
-
+    @Override
+    public void close() {
+        this.isclosed = true;
+    }
+    @Override
+    public boolean isClosed() {
+        return this.isclosed;
+    }
+    @Override
+    public boolean containsKey(String key) {
+        return false;
+    }
     @Override
     public boolean isExpired(String key) {
         return true;
@@ -36,7 +48,11 @@ public class SimpleMemoryCache implements MemoryCache {
     public void clear() throws CacheException {
     }
     @Override
-    public long size() {
+    public long getMaxSize() {
+        return 0;
+    }
+    @Override
+    public long getSize() {
         return 0;
     }
 

@@ -10,7 +10,7 @@ import java.util.Map;
  * 磁盘缓存
  * @author alafighting 2016-03
  */
-public interface DiskCache {
+public interface IDiskCache {
 
     /**
      * 读取
@@ -82,6 +82,24 @@ public interface DiskCache {
 
 
     /**
+     * 关闭
+     */
+    void close();
+
+    /**
+     * 是否已关闭
+     * @return
+     */
+    boolean isClosed();
+
+    /**
+     * 是否包含
+     * @param key
+     * @return
+     */
+    boolean containsKey(String key);
+
+    /**
      * 是否过期
      * @param key
      * @return
@@ -100,9 +118,15 @@ public interface DiskCache {
     void clear() throws CacheException;
 
     /**
+     * 最大缓存大小
+     * @return 单位:byte
+     */
+    long getMaxSize();
+
+    /**
      * 缓存大小
      * @return 单位:byte
      */
-    long size();
+    long getSize();
 
 }

@@ -1,8 +1,8 @@
 package com.im4j.library.kakacache;
 
-import com.im4j.library.kakacache.cache.disk.DiskCache;
+import com.im4j.library.kakacache.cache.disk.IDiskCache;
 import com.im4j.library.kakacache.cache.disk.SimpleDiskCache;
-import com.im4j.library.kakacache.cache.memory.MemoryCache;
+import com.im4j.library.kakacache.cache.memory.IMemoryCache;
 import com.im4j.library.kakacache.cache.memory.SimpleMemoryCache;
 import com.im4j.library.kakacache.exception.CacheException;
 import com.im4j.library.kakacache.loader.Loader;
@@ -16,10 +16,10 @@ import java.io.InputStream;
  */
 public class CacheManager {
 
-    private MemoryCache memory;
-    private DiskCache disk;
+    private IMemoryCache memory;
+    private IDiskCache disk;
 
-    private CacheManager(MemoryCache memory, DiskCache disk) {
+    private CacheManager(IMemoryCache memory, IDiskCache disk) {
         this.memory = memory;
         this.disk = disk;
     }
@@ -76,31 +76,29 @@ public class CacheManager {
      * 构造器
      */
     public static class Builder {
-        private static final MemoryCache DEFAULT_MEMORY_CACHE = new SimpleMemoryCache();
-        private static final DiskCache DEFAULT_DISK_CACHE = new SimpleDiskCache();
+        private static final IMemoryCache DEFAULT_MEMORY_CACHE = new SimpleMemoryCache();
+        private static final IDiskCache DEFAULT_DISK_CACHE = new SimpleDiskCache();
 
-        private MemoryCache memory;
-        private DiskCache disk;
+        private IMemoryCache memory = DEFAULT_MEMORY_CACHE;
+        private IDiskCache disk = DEFAULT_DISK_CACHE;
 
-        public Builder memory(MemoryCache memory) {
+        public Builder memory(IMemoryCache memory) {
             this.memory = memory;
+            if (this.memory == null) {
+                this.memory = DEFAULT_MEMORY_CACHE;
+            }
             return this;
         }
 
-        public Builder disk(DiskCache disk) {
+        public Builder disk(IDiskCache disk) {
             this.disk = disk;
+            if (this.disk == null) {
+                this.disk = DEFAULT_DISK_CACHE;
+            }
             return this;
         }
 
         public CacheManager create() {
-            MemoryCache memory = this.memory;
-            if (memory == null) {
-                memory = DEFAULT_MEMORY_CACHE;
-            }
-            DiskCache disk = this.disk;
-            if (disk == null) {
-                disk = DEFAULT_DISK_CACHE;
-            }
             return new CacheManager(memory, disk);
         }
     }

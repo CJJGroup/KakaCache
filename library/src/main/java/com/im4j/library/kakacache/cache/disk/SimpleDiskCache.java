@@ -1,6 +1,5 @@
 package com.im4j.library.kakacache.cache.disk;
 
-import com.im4j.library.kakacache.cache.memory.MemoryCache;
 import com.im4j.library.kakacache.exception.CacheException;
 import com.im4j.library.kakacache.writer.Writer;
 
@@ -11,8 +10,9 @@ import java.util.Map;
  * 简单空实现
  * @version 0.1 king 2016-03
  */
-public class SimpleDiskCache implements DiskCache {
+public class SimpleDiskCache implements IDiskCache {
 
+    private boolean isclosed;
     @Override
     public byte[] loadBytes(String key) throws CacheException {
         return null;
@@ -43,7 +43,18 @@ public class SimpleDiskCache implements DiskCache {
     public Map<String, InputStream> snapshot() {
         return null;
     }
-
+    @Override
+    public void close() {
+        this.isclosed = true;
+    }
+    @Override
+    public boolean isClosed() {
+        return this.isclosed;
+    }
+    @Override
+    public boolean containsKey(String key) {
+        return false;
+    }
     @Override
     public boolean isExpired(String key) {
         return true;
@@ -55,7 +66,11 @@ public class SimpleDiskCache implements DiskCache {
     public void clear() throws CacheException {
     }
     @Override
-    public long size() {
+    public long getMaxSize() {
+        return 0;
+    }
+    @Override
+    public long getSize() {
         return 0;
     }
 

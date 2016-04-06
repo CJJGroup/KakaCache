@@ -8,7 +8,7 @@ import java.util.Map;
  * 内存缓存
  * @author alafighting 2016-03
  */
-public interface MemoryCache {
+public interface IMemoryCache {
 
     /**
      * 读取
@@ -41,6 +41,24 @@ public interface MemoryCache {
 
 
     /**
+     * 关闭
+     */
+    void close();
+
+    /**
+     * 是否已关闭
+     * @return
+     */
+    boolean isClosed();
+
+    /**
+     * 是否包含
+     * @param key
+     * @return
+     */
+    boolean containsKey(String key);
+
+    /**
      * 是否过期
      * @param key
      * @return
@@ -59,9 +77,15 @@ public interface MemoryCache {
     void clear() throws CacheException;
 
     /**
+     * 最大缓存大小
+     * @return 单位:byte
+     */
+    long getMaxSize();
+
+    /**
      * 缓存大小
      * @return 单位:byte
      */
-    long size();
+    long getSize();
 
 }
