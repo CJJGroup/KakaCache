@@ -1,4 +1,4 @@
-package com.im4j.library.kakacache.writer;
+package com.im4j.library.kakacache.cache.disk.writer;
 
 import com.im4j.library.kakacache.cache.disk.IDiskCache;
 
@@ -8,7 +8,7 @@ import java.io.InputStream;
  * 写入器
  * @version 0.1 king 2016-03
  */
-public interface Writer<T> {
+public interface DiskWriter<T> {
 
     /**
      * 写入

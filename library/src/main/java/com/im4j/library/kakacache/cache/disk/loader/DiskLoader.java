@@ -1,4 +1,4 @@
-package com.im4j.library.kakacache.loader;
+package com.im4j.library.kakacache.cache.disk.loader;
 
 import java.io.InputStream;
 
@@ -6,7 +6,7 @@ import java.io.InputStream;
  * 加载器
  * @version 0.1 king 2016-03
  */
-public interface Loader<T> {
+public interface DiskLoader<T> {
 
     /**
      * 读取

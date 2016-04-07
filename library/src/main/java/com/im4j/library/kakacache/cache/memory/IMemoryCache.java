@@ -2,13 +2,14 @@ package com.im4j.library.kakacache.cache.memory;
 
 import com.im4j.library.kakacache.exception.CacheException;
 
+import java.io.Closeable;
 import java.util.Map;
 
 /**
  * 内存缓存
  * @author alafighting 2016-03
  */
-public interface IMemoryCache {
+public interface IMemoryCache extends Closeable {
 
     /**
      * 读取
@@ -43,7 +44,7 @@ public interface IMemoryCache {
     /**
      * 关闭
      */
-    void close();
+    void close() throws CacheException;
 
     /**
      * 是否已关闭

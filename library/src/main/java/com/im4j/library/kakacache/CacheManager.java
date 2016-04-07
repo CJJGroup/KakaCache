@@ -1,106 +1,56 @@
 package com.im4j.library.kakacache;
 
+import com.im4j.library.kakacache.cache.db.IDbCache;
 import com.im4j.library.kakacache.cache.disk.IDiskCache;
-import com.im4j.library.kakacache.cache.disk.SimpleDiskCache;
 import com.im4j.library.kakacache.cache.memory.IMemoryCache;
-import com.im4j.library.kakacache.cache.memory.SimpleMemoryCache;
 import com.im4j.library.kakacache.exception.CacheException;
-import com.im4j.library.kakacache.loader.Loader;
-import com.im4j.library.kakacache.writer.Writer;
-
-import java.io.InputStream;
 
 /**
  * 缓存管理器
- * @version 0.1 king 2016-03
+ * @version 0.1 king 2016-04
  */
-public class CacheManager {
-
-    private IMemoryCache memory;
-    private IDiskCache disk;
-
-    private CacheManager(IMemoryCache memory, IDiskCache disk) {
-        this.memory = memory;
-        this.disk = disk;
-    }
+public abstract class CacheManager {
 
     /**
-     * 读取
+     * 是否包含
+     * @param key
+     * @return
      */
-    public <T> T load(String key, Loader<T> loader) throws CacheException {
-        T result = (T) memory.load(key);
-        if (result != null) {
-            return result;
-        }
-
-        InputStream stream = disk.loadStream(key);
-        if (stream != null) {
-            result = loader.load(stream);
-            return result;
-        }
-
-        return null;
-    }
+    public abstract boolean containsKey(String key);
 
     /**
-     * 保存
+     * 是否过期
+     * @param key
+     * @return
      */
-    public <T> void save(String key, T value, Writer<T> writer) throws CacheException {
-        if (value == null) {
-            memory.remove(key);
-            disk.remove(key);
-            return;
-        }
-
-        memory.save(key, value);
-        disk.save(key, value, writer);
-    }
+    public abstract boolean isExpired(String key);
 
     /**
-     * 保存
-     * @param expires 有效期（单位：秒）
+     * 删除缓存
+     * @param key
      */
-    public <T> void save(String key, T value, int expires, Writer<T> writer) throws CacheException {
-        if (value == null) {
-            memory.remove(key);
-            disk.remove(key);
-            return;
-        }
+    public abstract void remove(String key) throws CacheException;
 
-        memory.save(key, value, expires);
-        disk.save(key, value, writer, expires);
-    }
+    /**
+     * 清空缓存
+     */
+    public abstract void clear() throws CacheException;
+
 
 
     /**
      * 构造器
      */
     public static class Builder {
-        private static final IMemoryCache DEFAULT_MEMORY_CACHE = new SimpleMemoryCache();
-        private static final IDiskCache DEFAULT_DISK_CACHE = new SimpleDiskCache();
 
-        private IMemoryCache memory = DEFAULT_MEMORY_CACHE;
-        private IDiskCache disk = DEFAULT_DISK_CACHE;
-
-        public Builder memory(IMemoryCache memory) {
-            this.memory = memory;
-            if (this.memory == null) {
-                this.memory = DEFAULT_MEMORY_CACHE;
-            }
-            return this;
+        public static DiskCacheManager.Builder with(IMemoryCache memory, IDiskCache disk) {
+            return new DiskCacheManager.Builder(memory, disk);
         }
 
-        public Builder disk(IDiskCache disk) {
-            this.disk = disk;
-            if (this.disk == null) {
-                this.disk = DEFAULT_DISK_CACHE;
-            }
-            return this;
+        public static DbCacheManager.Builder with(IDbCache db) {
+            return new DbCacheManager.Builder(db);
         }
 
-        public CacheManager create() {
-            return new CacheManager(memory, disk);
-        }
     }
 
 }

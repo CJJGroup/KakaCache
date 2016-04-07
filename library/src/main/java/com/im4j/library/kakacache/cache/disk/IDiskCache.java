@@ -1,8 +1,9 @@
 package com.im4j.library.kakacache.cache.disk;
 
 import com.im4j.library.kakacache.exception.CacheException;
-import com.im4j.library.kakacache.writer.Writer;
+import com.im4j.library.kakacache.cache.disk.writer.DiskWriter;
 
+import java.io.Closeable;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -10,7 +11,7 @@ import java.util.Map;
  * 磁盘缓存
  * @author alafighting 2016-03
  */
-public interface IDiskCache {
+public interface IDiskCache extends Closeable {
 
     /**
      * 读取
@@ -60,18 +61,18 @@ public interface IDiskCache {
      * 保存
      * @param key
      * @param value
-     * @param writer
+     * @param diskWriter
      */
-    <T> void save(String key, T value, Writer<T> writer) throws CacheException;
+    <T> void save(String key, T value, DiskWriter<T> diskWriter) throws CacheException;
 
     /**
      * 保存
      * @param key
      * @param value
-     * @param writer
+     * @param diskWriter
      * @param expires 有效期（单位：秒）
      */
-    <T> void save(String key, T value, Writer<T> writer, int expires) throws CacheException;
+    <T> void save(String key, T value, DiskWriter<T> diskWriter, int expires) throws CacheException;
 
     /**
      * 快照
@@ -84,7 +85,7 @@ public interface IDiskCache {
     /**
      * 关闭
      */
-    void close();
+    void close() throws CacheException;
 
     /**
      * 是否已关闭
