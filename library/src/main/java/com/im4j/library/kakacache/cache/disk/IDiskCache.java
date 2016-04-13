@@ -1,10 +1,11 @@
 package com.im4j.library.kakacache.cache.disk;
 
-import com.im4j.library.kakacache.exception.CacheException;
+import com.im4j.library.kakacache.cache.disk.snapshot.CacheEntry;
+import com.im4j.library.kakacache.cache.disk.source.Source;
 import com.im4j.library.kakacache.cache.disk.writer.DiskWriter;
+import com.im4j.library.kakacache.exception.CacheException;
 
 import java.io.Closeable;
-import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -18,21 +19,14 @@ public interface IDiskCache extends Closeable {
      * @param key
      * @return
      */
-    byte[] loadBytes(String key) throws CacheException;
-
-    /**
-     * 读取
-     * @param key
-     * @return
-     */
-    InputStream loadStream(String key) throws CacheException;
+    CacheEntry load(String key) throws CacheException;
 
     /**
      * 保存
      * @param key
      * @param value
      */
-    void save(String key, byte[] value) throws CacheException;
+    CacheEntry save(String key, byte[] value) throws CacheException;
 
     /**
      * 保存
@@ -40,22 +34,22 @@ public interface IDiskCache extends Closeable {
      * @param value
      * @param expires 有效期（单位：秒）
      */
-    void save(String key, byte[] value, int expires) throws CacheException;
+    CacheEntry save(String key, byte[] value, int expires) throws CacheException;
 
     /**
      * 保存
      * @param key
-     * @param stream
+     * @param source
      */
-    void save(String key, InputStream stream) throws CacheException;
+    CacheEntry save(String key, Source source) throws CacheException;
 
     /**
      * 保存
      * @param key
-     * @param stream
+     * @param source
      * @param expires 有效期（单位：秒）
      */
-    void save(String key, InputStream stream, int expires) throws CacheException;
+    CacheEntry save(String key, Source source, int expires) throws CacheException;
 
     /**
      * 保存
@@ -63,7 +57,7 @@ public interface IDiskCache extends Closeable {
      * @param value
      * @param diskWriter
      */
-    <T> void save(String key, T value, DiskWriter<T> diskWriter) throws CacheException;
+    <T> CacheEntry save(String key, T value, DiskWriter<T> diskWriter) throws CacheException;
 
     /**
      * 保存
@@ -72,13 +66,13 @@ public interface IDiskCache extends Closeable {
      * @param diskWriter
      * @param expires 有效期（单位：秒）
      */
-    <T> void save(String key, T value, DiskWriter<T> diskWriter, int expires) throws CacheException;
+    <T> CacheEntry save(String key, T value, DiskWriter<T> diskWriter, int expires) throws CacheException;
 
     /**
      * 快照
      * @return
      */
-    Map<String, InputStream> snapshot();
+    Map<String, CacheEntry> snapshot();
 
 
 
@@ -94,20 +88,6 @@ public interface IDiskCache extends Closeable {
     boolean isClosed();
 
     /**
-     * 是否包含
-     * @param key
-     * @return
-     */
-    boolean containsKey(String key);
-
-    /**
-     * 是否过期
-     * @param key
-     * @return
-     */
-    boolean isExpired(String key);
-
-    /**
      * 删除缓存
      * @param key
      */
@@ -117,12 +97,6 @@ public interface IDiskCache extends Closeable {
      * 清空缓存
      */
     void clear() throws CacheException;
-
-    /**
-     * 最大缓存大小
-     * @return 单位:byte
-     */
-    long getMaxSize();
 
     /**
      * 缓存大小

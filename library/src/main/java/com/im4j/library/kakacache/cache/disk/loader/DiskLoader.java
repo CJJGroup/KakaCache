@@ -1,5 +1,7 @@
 package com.im4j.library.kakacache.cache.disk.loader;
 
+import com.im4j.library.kakacache.cache.disk.source.Source;
+
 import java.io.InputStream;
 
 /**
@@ -10,9 +12,9 @@ public interface DiskLoader<T> {
 
     /**
      * 读取
-     * @param stream
+     * @param source
      * @return
      */
-    T load(InputStream stream);
+    T load(Source source);
 
 }
