@@ -2,53 +2,62 @@ package com.im4j.library.kakacache.cache.disk;
 
 import com.google.gson.reflect.TypeToken;
 import com.im4j.library.kakacache.cache.disk.loader.DiskLoader;
-import com.im4j.library.kakacache.cache.disk.snapshot.CacheEntry;
+import com.im4j.library.kakacache.cache.disk.storage.JournalEntry;
+import com.im4j.library.kakacache.cache.disk.storage.IDiskStorage;
+import com.im4j.library.kakacache.cache.disk.storage.IJournal;
 import com.im4j.library.kakacache.cache.disk.writer.DiskWriter;
 import com.im4j.library.kakacache.exception.CacheException;
+import com.im4j.library.kakacache.utils.Utils;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 内部缓存实现
+ * 磁盘缓存包裹
  * @version 0.1 king 2016-04
  */
-public class InternalDiskCache {
+public final class DiskCacheWrapper {
 
-    private final IDiskCache disk;
+    private final IDiskStorage storage;
+    private final IJournal journal;
+    private final long mMaxSize;
 
-    private Map<Type, DiskLoader> loaderMap;
-    private Map<Type, DiskWriter> writerMap;
+    private final Map<Type, DiskLoader> loaderMap;
+    private final Map<Type, DiskWriter> writerMap;
 
-    private Map<String, CacheEntry> journal;
-
-    public InternalDiskCache(IDiskCache disk) {
-        this.disk = disk;
+    public DiskCacheWrapper(IDiskStorage storage, IJournal journal, long maxSize) {
+        this.storage = storage;
+        this.journal = journal;
+        this.mMaxSize = maxSize;
         this.loaderMap = new HashMap<>();
         this.writerMap = new HashMap<>();
-
-        this.journal = new HashMap<>();
-        this.journal.putAll(disk.snapshot());
     }
 
 
     /**
      * 读取
+     * @param key
+     * @param <T>
+     * @return
      */
     public <T> T load(String key) throws CacheException {
-        CacheEntry entry = disk.load(key);
-        if (entry != null) {
-            // 过期自动清理
-            if (entry.isExpiry()) {
-                remove(key);
-                return null;
-            } else {
-                DiskLoader<T> diskLoader = getLoader();
-                return diskLoader.load(entry.getSource());
-            }
+        Utils.checkNotNull(key);
+
+        JournalEntry entry = journal.get(key);
+        if (entry == null) {
+            return null;
         }
-        return null;
+
+        // 过期自动清理
+        if (entry.isExpiry()) {
+            remove(key);
+            return null;
+        }
+
+        // 读取缓存
+        DiskLoader<T> diskLoader = getLoader();
+        return diskLoader.load(storage.get(key));
     }
 
     /**
@@ -56,17 +65,27 @@ public class InternalDiskCache {
      * @param expires 有效期（单位：秒）
      */
     public <T> void save(String key, T value, int expires) throws CacheException {
+        Utils.checkNotNull(key);
+
         if (value == null) {
             remove(key);
             return;
         }
 
-        DiskWriter<T> diskWriter = getWriter();
-        CacheEntry entry = disk.save(key, value, diskWriter, expires);
-        journal.put(key, entry);
+        if (getMaxSize() == 0) {
+            return;
+        }
 
-        // 过期自动清理
-        clearExpiry();
+        // TODO 清理存储空间，以供写入新的数据
+        clearUnused();
+
+        // 写入缓存
+        DiskWriter<T> diskWriter = getWriter();
+        diskWriter.writer(value, storage.create(key), expires);
+        journal.put(key, new JournalEntry(key, expires));
+
+        // 清理无用数据
+        clearUnused();
     }
 
     /**
@@ -83,7 +102,7 @@ public class InternalDiskCache {
      * @param key
      */
     public void remove(String key) throws CacheException {
-        disk.remove(key);
+        storage.remove(key);
         journal.remove(key);
     }
 
@@ -91,19 +110,34 @@ public class InternalDiskCache {
      * 清空缓存
      */
     public void clear() throws CacheException {
-        disk.clear();
+        storage.clear();
         journal.clear();
     }
 
     /**
-     * 清理过期缓存
+     * 清理无用缓存
      */
-    public void clearExpiry() {
-        for (CacheEntry entry : journal.values()) {
+    public void clearUnused() {
+        // 清理过期
+        for (JournalEntry entry : journal.snapshot()) {
             if (entry.isExpiry()) {
                 remove(entry.getKey());
             }
         }
+
+        // 清理超支
+        while (getMaxSize() < getSize()) {
+            String key = storage.getLastKey();
+            remove(key);
+        }
+    }
+
+    /**
+     * 最大缓存大小
+     * @return 单位:byte
+     */
+    public long getMaxSize() {
+        return mMaxSize;
     }
 
     /**
@@ -111,7 +145,11 @@ public class InternalDiskCache {
      * @return 单位:byte
      */
     public long getSize() {
-        return disk.getSize();
+        long size = storage.getTotalSize();
+        if (size < 0) {
+            throw new CacheException("Cache size should not be < 0.");
+        }
+        return size;
     }
 
 

@@ -11,11 +11,30 @@ public class Utils {
     private Utils() {
     }
 
-    public static <T> T checkIsNotNull(T arg) {
-        if (arg == null) {
+    /**
+     * 不为空
+     */
+    public static <T> T checkNotNull(T obj) {
+        if (obj == null) {
             throw new ArgumentException("Can not be empty.");
         }
-        return arg;
+        return obj;
+    }
+
+    /**
+     * 不小于0
+     */
+    public static void checkNotLessThanZero(long number) {
+        if (number < 0) {
+            throw new ArgumentException("Can not be less than zero.");
+        }
+    }
+
+    public static boolean isEmpty(String str) {
+        if (str == null || str.isEmpty()) {
+            return true;
+        }
+        return false;
     }
 
 }

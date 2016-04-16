@@ -1,7 +1,10 @@
 package com.im4j.library.kakacache.cache;
 
-import com.im4j.library.kakacache.cache.disk.IDiskCache;
-import com.im4j.library.kakacache.cache.disk.InternalDiskCache;
+import com.im4j.library.kakacache.cache.disk.DiskCacheWrapper;
+import com.im4j.library.kakacache.cache.disk.loader.DiskLoader;
+import com.im4j.library.kakacache.cache.disk.storage.IDiskStorage;
+import com.im4j.library.kakacache.cache.disk.storage.IJournal;
+import com.im4j.library.kakacache.cache.disk.writer.DiskWriter;
 import com.im4j.library.kakacache.cache.memory.IMemoryCache;
 import com.im4j.library.kakacache.exception.CacheException;
 import com.im4j.library.kakacache.utils.Utils;
@@ -13,11 +16,11 @@ import com.im4j.library.kakacache.utils.Utils;
 public class CacheCore {
 
     private IMemoryCache memory;
-    private InternalDiskCache disk;
+    private DiskCacheWrapper disk;
 
-    private CacheCore(IMemoryCache memory, IDiskCache disk) {
-        this.memory = Utils.checkIsNotNull(memory);
-        this.disk = new InternalDiskCache(Utils.checkIsNotNull(disk));
+    private CacheCore(IMemoryCache memory, DiskCacheWrapper disk) {
+        this.memory = Utils.checkNotNull(memory);
+        this.disk = Utils.checkNotNull(disk);
     }
 
 
@@ -25,14 +28,18 @@ public class CacheCore {
      * 读取
      */
     public <T> T load(String key) throws CacheException {
-        T result = (T) memory.load(key);
-        if (result != null) {
-            return result;
+        if (memory != null) {
+            T result = (T) memory.load(key);
+            if (result != null) {
+                return result;
+            }
         }
 
-        result = disk.load(key);
-        if (result != null) {
-            return result;
+        if (disk != null) {
+            T result = disk.load(key);
+            if (result != null) {
+                return result;
+            }
         }
 
         return null;
@@ -56,8 +63,12 @@ public class CacheCore {
             return;
         }
 
-        memory.save(key, value, expires);
-        disk.save(key, value, expires);
+        if (memory != null) {
+            memory.save(key, value, expires);
+        }
+        if (disk != null) {
+            disk.save(key, value, expires);
+        }
     }
 
     /**
@@ -66,7 +77,17 @@ public class CacheCore {
      * @return
      */
     public boolean containsKey(String key) {
-        return memory.containsKey(key) || disk.containsKey(key);
+        if (memory != null) {
+            if (memory.containsKey(key)) {
+                return true;
+            }
+        }
+        if (disk != null) {
+            if (disk.containsKey(key)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -74,28 +95,62 @@ public class CacheCore {
      * @param key
      */
     public void remove(String key) throws CacheException {
-        memory.remove(key);
-        disk.remove(key);
+        if (memory != null) {
+            memory.remove(key);
+        }
+        if (disk != null) {
+            disk.remove(key);
+        }
     }
 
     /**
      * 清空缓存
      */
     public void clear() throws CacheException {
-        memory.clear();
-        disk.clear();
+        if (memory != null) {
+            memory.clear();
+        }
+        if (disk != null) {
+            disk.clear();
+        }
     }
+
 
     /**
      * 构造器
      */
     public static class Builder {
         private IMemoryCache memory;
-        private IDiskCache disk;
+        private DiskCacheWrapper disk;
 
-        public Builder(IMemoryCache memory, IDiskCache disk) {
-            this.memory = Utils.checkIsNotNull(memory);
-            this.disk = Utils.checkIsNotNull(disk);
+        public Builder() {
+        }
+
+        public Builder memory(IMemoryCache memory) {
+            this.memory = Utils.checkNotNull(memory);
+            return this;
+        }
+
+        public Builder disk(IDiskStorage storage, IJournal journal, long maxSize) {
+            Utils.checkNotNull(storage);
+            Utils.checkNotNull(journal);
+            Utils.checkNotLessThanZero(maxSize);
+
+            this.disk = new DiskCacheWrapper(storage, journal, maxSize);
+            return this;
+        }
+
+        /**
+         * 注册类型转换器
+         * @param loader
+         */
+        public <T> Builder registerTypeConverter(DiskLoader<T> loader, DiskWriter<T> writer) {
+            Utils.checkNotNull(disk);
+            Utils.checkNotNull(loader);
+            Utils.checkNotNull(writer);
+
+            disk.registerTypeConverter(Utils.checkNotNull(loader), Utils.checkNotNull(writer));
+            return this;
         }
 
         public CacheCore create() {

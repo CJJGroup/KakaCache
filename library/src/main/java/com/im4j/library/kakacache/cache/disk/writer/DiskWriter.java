@@ -1,9 +1,6 @@
 package com.im4j.library.kakacache.cache.disk.writer;
 
-import com.im4j.library.kakacache.cache.disk.IDiskCache;
 import com.im4j.library.kakacache.cache.disk.sink.Sink;
-
-import java.io.InputStream;
 
 /**
  * 写入器
