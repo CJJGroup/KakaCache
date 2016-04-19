@@ -9,8 +9,13 @@ import java.io.IOException;
  */
 public interface Source extends Closeable {
 
+    /**
+     * 读取一个字节，并将其作为一个从0到255的整数
+     * @return 如果返回-1，表示已达到末尾
+     * @throws IOException
+     */
     int read() throws IOException;
-    int read(byte[] buffer) throws IOException;
+
     int read(byte[] buffer, int offset, int byteCount) throws IOException;
 
     @Override

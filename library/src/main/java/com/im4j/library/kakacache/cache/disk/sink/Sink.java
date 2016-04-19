@@ -10,8 +10,13 @@ import java.io.IOException;
  */
 public interface Sink extends Closeable, Flushable {
 
+    /**
+     * 写入一个字节
+     * @param oneByte 从0到255的整数
+     * @throws IOException
+     */
     void write(int oneByte) throws IOException;
-    void write(byte[] buffer) throws IOException;
+
     void write(byte[] buffer, int offset, int byteCount) throws IOException;
 
     @Override

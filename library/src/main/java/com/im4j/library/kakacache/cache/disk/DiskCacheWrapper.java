@@ -1,17 +1,16 @@
 package com.im4j.library.kakacache.cache.disk;
 
 import com.google.gson.reflect.TypeToken;
-import com.im4j.library.kakacache.cache.disk.loader.DiskLoader;
-import com.im4j.library.kakacache.cache.disk.storage.JournalEntry;
+import com.im4j.library.kakacache.cache.disk.converter.IDiskConverter;
+import com.im4j.library.kakacache.cache.disk.sink.Sink;
+import com.im4j.library.kakacache.cache.disk.source.Source;
 import com.im4j.library.kakacache.cache.disk.storage.IDiskStorage;
 import com.im4j.library.kakacache.cache.disk.storage.IJournal;
-import com.im4j.library.kakacache.cache.disk.writer.DiskWriter;
+import com.im4j.library.kakacache.cache.disk.storage.JournalEntry;
 import com.im4j.library.kakacache.exception.CacheException;
 import com.im4j.library.kakacache.utils.Utils;
 
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
 /**
  * 磁盘缓存包裹
@@ -19,21 +18,20 @@ import java.util.Map;
  */
 public final class DiskCacheWrapper {
 
-    private final IDiskStorage storage;
-    private final IJournal journal;
+    private final IDiskConverter mConverter;
+    private final IDiskStorage mStorage;
+    private final IJournal mJournal;
     private final long mMaxSize;
 
-    private final Map<Type, DiskLoader> loaderMap;
-    private final Map<Type, DiskWriter> writerMap;
-
-    public DiskCacheWrapper(IDiskStorage storage, IJournal journal, long maxSize) {
-        this.storage = storage;
-        this.journal = journal;
+    public DiskCacheWrapper(IDiskConverter converter,
+                            IDiskStorage storage,
+                            IJournal journal,
+                            long maxSize) {
+        this.mConverter = converter;
+        this.mStorage = storage;
+        this.mJournal = journal;
         this.mMaxSize = maxSize;
-        this.loaderMap = new HashMap<>();
-        this.writerMap = new HashMap<>();
     }
-
 
     /**
      * 读取
@@ -44,7 +42,7 @@ public final class DiskCacheWrapper {
     public <T> T load(String key) throws CacheException {
         Utils.checkNotNull(key);
 
-        JournalEntry entry = journal.get(key);
+        JournalEntry entry = mJournal.get(key);
         if (entry == null) {
             return null;
         }
@@ -56,8 +54,13 @@ public final class DiskCacheWrapper {
         }
 
         // 读取缓存
-        DiskLoader<T> diskLoader = getLoader();
-        return diskLoader.load(storage.get(key));
+        Source source = mStorage.get(key);
+        T value = (T) mConverter.load(source, new TypeToken<T>(){}.getType());
+        try {
+            source.close();
+        } catch (IOException e) {
+        }
+        return value;
     }
 
     /**
@@ -80,9 +83,14 @@ public final class DiskCacheWrapper {
         clearUnused();
 
         // 写入缓存
-        DiskWriter<T> diskWriter = getWriter();
-        diskWriter.writer(value, storage.create(key), expires);
-        journal.put(key, new JournalEntry(key, expires));
+        Sink sink = mStorage.create(key);
+        mConverter.writer(sink, value);
+        try {
+            sink.close();
+        } catch (IOException e) {
+        }
+
+        mJournal.put(key, new JournalEntry(key, expires));
 
         // 清理无用数据
         clearUnused();
@@ -94,7 +102,7 @@ public final class DiskCacheWrapper {
      * @return
      */
     public boolean containsKey(String key) {
-        return journal.containsKey(key);
+        return mJournal.containsKey(key);
     }
 
     /**
@@ -102,16 +110,16 @@ public final class DiskCacheWrapper {
      * @param key
      */
     public void remove(String key) throws CacheException {
-        storage.remove(key);
-        journal.remove(key);
+        mStorage.remove(key);
+        mJournal.remove(key);
     }
 
     /**
      * 清空缓存
      */
     public void clear() throws CacheException {
-        storage.clear();
-        journal.clear();
+        mStorage.clear();
+        mJournal.clear();
     }
 
     /**
@@ -119,7 +127,7 @@ public final class DiskCacheWrapper {
      */
     public void clearUnused() {
         // 清理过期
-        for (JournalEntry entry : journal.snapshot()) {
+        for (JournalEntry entry : mJournal.snapshot()) {
             if (entry.isExpiry()) {
                 remove(entry.getKey());
             }
@@ -127,7 +135,7 @@ public final class DiskCacheWrapper {
 
         // 清理超支
         while (getMaxSize() < getSize()) {
-            String key = storage.getLastKey();
+            String key = mStorage.getLastKey();
             remove(key);
         }
     }
@@ -145,39 +153,11 @@ public final class DiskCacheWrapper {
      * @return 单位:byte
      */
     public long getSize() {
-        long size = storage.getTotalSize();
+        long size = mStorage.getTotalSize();
         if (size < 0) {
             throw new CacheException("Cache size should not be < 0.");
         }
         return size;
     }
 
-
-
-    /**
-     * 注册类型转换器
-     * @param loader
-     */
-    public <T> void registerTypeConverter(DiskLoader<T> loader, DiskWriter<T> writer) {
-        Type type = new TypeToken<T>(){}.getType();
-        loaderMap.put(type, loader);
-        writerMap.put(type, writer);
-    }
-
-    private <T> DiskLoader<T> getLoader() {
-        Type type = new TypeToken<T>(){}.getType();
-        DiskLoader<T> diskLoader = loaderMap.get(type);
-        if (diskLoader == null) {
-            throw new CacheException("loader can't find");
-        }
-        return diskLoader;
-    }
-    private <T> DiskWriter<T> getWriter() {
-        Type type = new TypeToken<T>(){}.getType();
-        DiskWriter<T> diskWriter = writerMap.get(type);
-        if (diskWriter == null) {
-            throw new CacheException("writer can't find");
-        }
-        return diskWriter;
-    }
 }
