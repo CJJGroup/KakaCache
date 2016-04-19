@@ -46,6 +46,6 @@
 ## 关于
 
 - 这是一个开源项目，在不断思考完善中慢慢走向成熟
-- 如果你觉得这个项目不错，请为TA [点赞](https://github.com/CJJGroup/KakaCache)
-- 能 [Follow](https://github.com/alafighting) 下我就更好了
+- 如果你觉得这个项目不错，欢迎 [★ Star](https://github.com/LittleFriendsGroup/KakaCache)
+- 能 [Follow 我](https://github.com/alafighting) 就更好了
 - 你的支持是我持续开源的动力！！！
