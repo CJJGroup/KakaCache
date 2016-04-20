@@ -1,11 +1,10 @@
 package com.im4j.kakacache.core.cache.memory;
 
-import com.im4j.kakacache.core.cache.disk.journal.IDiskJournal;
+import com.im4j.kakacache.common.exception.CacheException;
+import com.im4j.kakacache.common.utils.Utils;
 import com.im4j.kakacache.core.cache.CacheEntry;
 import com.im4j.kakacache.core.cache.memory.journal.IMemoryJournal;
 import com.im4j.kakacache.core.cache.memory.storage.IMemoryStorage;
-import com.im4j.kakacache.core.exception.CacheException;
-import com.im4j.kakacache.core.utils.Utils;
 
 /**
  * 内存缓存
@@ -68,7 +67,9 @@ public final class MemoryCache {
 
         // 写入缓存
         mStorage.save(key, value);
-        mJournal.put(key, new CacheEntry(key, expires));
+        long createTime = System.currentTimeMillis();
+        long expiresTime = createTime + expires;
+        mJournal.put(key, new CacheEntry(key, createTime, expiresTime));
 
         // 清理无用数据
         clearUnused();

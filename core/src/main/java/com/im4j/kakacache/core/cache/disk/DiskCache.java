@@ -7,8 +7,8 @@ import com.im4j.kakacache.core.cache.disk.source.Source;
 import com.im4j.kakacache.core.cache.disk.storage.IDiskStorage;
 import com.im4j.kakacache.core.cache.disk.journal.IDiskJournal;
 import com.im4j.kakacache.core.cache.CacheEntry;
-import com.im4j.kakacache.core.exception.CacheException;
-import com.im4j.kakacache.core.utils.Utils;
+import com.im4j.kakacache.common.exception.CacheException;
+import com.im4j.kakacache.common.utils.Utils;
 
 import java.io.IOException;
 
@@ -88,7 +88,9 @@ public final class DiskCache {
         } catch (IOException e) {
         }
 
-        mJournal.put(key, new CacheEntry(key, expires));
+        long createTime = System.currentTimeMillis();
+        long expiresTime = createTime + expires;
+        mJournal.put(key, new CacheEntry(key, createTime, expiresTime));
 
         // 清理无用数据
         clearUnused();

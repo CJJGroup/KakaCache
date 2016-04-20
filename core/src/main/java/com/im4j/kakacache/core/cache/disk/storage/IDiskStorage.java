@@ -2,7 +2,7 @@ package com.im4j.kakacache.core.cache.disk.storage;
 
 import com.im4j.kakacache.core.cache.disk.sink.Sink;
 import com.im4j.kakacache.core.cache.disk.source.Source;
-import com.im4j.kakacache.core.exception.CacheException;
+import com.im4j.kakacache.common.exception.CacheException;
 
 import java.io.Closeable;
 import java.util.Map;

@@ -7,8 +7,8 @@ import com.im4j.kakacache.core.cache.disk.journal.IDiskJournal;
 import com.im4j.kakacache.core.cache.memory.journal.IMemoryJournal;
 import com.im4j.kakacache.core.cache.memory.storage.IMemoryStorage;
 import com.im4j.kakacache.core.cache.memory.MemoryCache;
-import com.im4j.kakacache.core.exception.CacheException;
-import com.im4j.kakacache.core.utils.Utils;
+import com.im4j.kakacache.common.exception.CacheException;
+import com.im4j.kakacache.common.utils.Utils;
 
 /**
  * 缓存核心

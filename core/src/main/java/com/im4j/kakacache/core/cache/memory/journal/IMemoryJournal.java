@@ -1,7 +1,7 @@
 package com.im4j.kakacache.core.cache.memory.journal;
 
 import com.im4j.kakacache.core.cache.CacheEntry;
-import com.im4j.kakacache.core.exception.CacheException;
+import com.im4j.kakacache.common.exception.CacheException;
 
 import java.io.Closeable;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.im4j.kakacache.core.exception;
+package com.im4j.kakacache.common.exception;
 
 /**
  * 缓存处理错误

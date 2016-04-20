@@ -1,6 +1,6 @@
 package com.im4j.kakacache.core.cache.disk.source;
 
-import com.im4j.kakacache.core.utils.Utils;
+import com.im4j.kakacache.common.utils.Utils;
 
 import java.io.IOException;
 

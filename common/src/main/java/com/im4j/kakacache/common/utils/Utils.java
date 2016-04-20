@@ -1,6 +1,6 @@
-package com.im4j.kakacache.core.utils;
+package com.im4j.kakacache.common.utils;
 
-import com.im4j.kakacache.core.exception.ArgumentException;
+import com.im4j.kakacache.common.exception.ArgumentException;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
