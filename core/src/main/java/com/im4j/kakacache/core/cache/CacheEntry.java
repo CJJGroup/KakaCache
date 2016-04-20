@@ -11,17 +11,16 @@ public class CacheEntry {
     private long createTime;
     /** 过期时间 */
     private long expiryTime;
+    /** 缓存目标 */
+    private CacheTarget target;
     // TODO 有待商讨
 //    private long size;
 
-    public CacheEntry(String key) {
-        this.key = key;
-        this.createTime = System.currentTimeMillis();
-    }
-    public CacheEntry(String key, long createTime, long expiryTime) {
+    public CacheEntry(String key, long createTime, long expiryTime, CacheTarget target) {
         this.key = key;
         this.createTime = createTime;
         this.expiryTime = expiryTime;
+        this.target = target;
     }
 
 
@@ -35,9 +34,11 @@ public class CacheEntry {
 
     @Override
     public String toString() {
-        return "{" + "key='" + key + '\'' +
+        return "CacheEntry{" +
+                "key='" + key + '\'' +
                 ", createTime=" + createTime +
                 ", expiryTime=" + expiryTime +
+                ", target=" + target +
                 '}';
     }
 
@@ -50,15 +51,24 @@ public class CacheEntry {
         return createTime;
     }
 
-    public long getExpiryTime() {
-        return expiryTime;
-    }
-
     public void setCreateTime(long createTime) {
         this.createTime = createTime;
+    }
+
+    public long getExpiryTime() {
+        return expiryTime;
     }
 
     public void setExpiryTime(long expiryTime) {
         this.expiryTime = expiryTime;
     }
+
+    public CacheTarget getCacheTarget() {
+        return target;
+    }
+
+    public void setCacheTarget(CacheTarget target) {
+        this.target = target;
+    }
+
 }

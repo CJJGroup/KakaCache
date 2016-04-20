@@ -1,6 +1,8 @@
 package com.im4j.kakacache.core.cache.disk;
 
 import com.google.gson.reflect.TypeToken;
+import com.im4j.kakacache.core.cache.Cache;
+import com.im4j.kakacache.core.cache.CacheTarget;
 import com.im4j.kakacache.core.cache.disk.converter.IDiskConverter;
 import com.im4j.kakacache.core.cache.disk.sink.Sink;
 import com.im4j.kakacache.core.cache.disk.source.Source;
@@ -11,30 +13,29 @@ import com.im4j.kakacache.common.exception.CacheException;
 import com.im4j.kakacache.common.utils.Utils;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * 磁盘缓存
  * @version 0.1 king 2016-04
  */
-public final class DiskCache {
+public final class DiskCache extends Cache {
 
     private final IDiskStorage mStorage;
     private final IDiskJournal mJournal;
     private final IDiskConverter mConverter;
-    private final long mMaxSize;
-    private final long mMaxQuantity;
 
     public DiskCache(IDiskStorage storage,
                      IDiskJournal journal,
                      IDiskConverter converter,
                      long maxSize,
                      long maxQuantity) {
+        super(maxSize, maxQuantity);
         this.mStorage = storage;
         this.mJournal = journal;
         this.mConverter = converter;
-        this.mMaxSize = maxSize;
-        this.mMaxQuantity = maxQuantity;
     }
+
 
     /**
      * 读取
@@ -42,20 +43,9 @@ public final class DiskCache {
      * @param <T>
      * @return
      */
-    public <T> T load(String key) throws CacheException {
-        Utils.checkNotNull(key);
 
-        CacheEntry entry = mJournal.get(key);
-        if (entry == null) {
-            return null;
-        }
-
-        // 过期自动清理
-        if (entry.isExpiry()) {
-            remove(key);
-            return null;
-        }
-
+    @Override
+    protected <T> T doLoad(String key) throws CacheException {
         // 读取缓存
         Source source = mStorage.load(key);
         T value = (T) mConverter.load(source, new TypeToken<T>(){}.getType());
@@ -70,15 +60,11 @@ public final class DiskCache {
      * 保存
      * @param expires 有效期（单位：秒）
      */
-    public <T> void save(String key, T value, int expires) throws CacheException {
-        Utils.checkNotNull(key);
-
-        if (value == null) {
-            remove(key);
+    @Override
+    protected <T> void doSave(String key, T value, int expires, CacheTarget target) throws CacheException {
+        if (target == null || target == CacheTarget.Memory) {
             return;
         }
-
-        // TODO 先写入，后清理。会超出限定条件，需要一定交换空间
 
         // 写入缓存
         Sink sink = mStorage.create(key);
@@ -90,76 +76,50 @@ public final class DiskCache {
 
         long createTime = System.currentTimeMillis();
         long expiresTime = createTime + expires;
-        mJournal.put(key, new CacheEntry(key, createTime, expiresTime));
-
-        // 清理无用数据
-        clearUnused();
+        mJournal.put(key, new CacheEntry(key, createTime, expiresTime, target));
     }
 
-    /**
-     * 是否包含
-     * @param key
-     * @return
-     */
+    @Override
+    protected boolean isExpiry(String key) {
+        CacheEntry entry = mJournal.get(key);
+        return entry == null || entry.isExpiry();
+    }
+
+    @Override
     public boolean containsKey(String key) {
         return mJournal.containsKey(key);
     }
 
-    /**
-     * 删除缓存
-     * @param key
-     */
+    @Override
     public void remove(String key) throws CacheException {
         mStorage.remove(key);
         mJournal.remove(key);
     }
 
-    /**
-     * 清空缓存
-     */
+    @Override
     public void clear() throws CacheException {
         mStorage.clear();
         mJournal.clear();
     }
 
-    /**
-     * 清理无用缓存
-     */
-    public void clearUnused() {
-        // 清理过期
-        for (CacheEntry entry : mJournal.snapshot()) {
-            if (entry.isExpiry()) {
-                remove(entry.getKey());
-            }
-        }
-
-        // 清理超出缓存
-        if (mMaxSize != 0) {
-            while (mMaxSize < getTotalSize()) {
-                remove(mJournal.getLoseKey());
-            }
-        }
-        if (mMaxQuantity != 0) {
-            while (mMaxQuantity < getTotalQuantity()) {
-                remove(mJournal.getLoseKey());
-            }
-        }
+    @Override
+    public List<CacheEntry> snapshot() {
+        return mJournal.snapshot();
     }
 
-    /**
-     * 缓存大小
-     * @return 单位:byte
-     */
+    @Override
+    public String getLoseKey() throws CacheException {
+        return mJournal.getLoseKey();
+    }
+
+    @Override
     public long getTotalSize() {
         long size = mStorage.getTotalSize();
         Utils.checkNotLessThanZero(size);
         return size;
     }
 
-    /**
-     * 缓存个数
-     * @return 单位:个数
-     */
+    @Override
     public long getTotalQuantity() {
         long quantity = mStorage.getTotalQuantity();
         Utils.checkNotLessThanZero(quantity);

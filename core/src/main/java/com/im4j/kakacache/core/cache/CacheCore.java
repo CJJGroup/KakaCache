@@ -48,16 +48,9 @@ public class CacheCore {
 
     /**
      * 保存
-     */
-    public <T> void save(String key, T value) throws CacheException {
-        save(key, value, -1);
-    }
-
-    /**
-     * 保存
      * @param expires 有效期（单位：秒）
      */
-    public <T> void save(String key, T value, int expires) throws CacheException {
+    public <T> void save(String key, T value, int expires, CacheTarget target) throws CacheException {
         if (value == null) {
             memory.remove(key);
             disk.remove(key);
@@ -65,10 +58,10 @@ public class CacheCore {
         }
 
         if (memory != null) {
-            memory.save(key, value, expires);
+            memory.save(key, value, expires, target);
         }
         if (disk != null) {
-            disk.save(key, value, expires);
+            disk.save(key, value, expires, target);
         }
     }
 
