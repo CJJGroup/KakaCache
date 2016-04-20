@@ -1,10 +1,10 @@
-package com.im4j.kakacache.core.cache.journal;
+package com.im4j.kakacache.core.cache;
 
 /**
  * 日志项
  * @version 0.1 king 2016-04
  */
-public class JournalEntry {
+public class CacheEntry {
     private final String key;
     private long expiryTime;
     // TODO 有待商讨
@@ -12,10 +12,10 @@ public class JournalEntry {
 //    private long expiry;
 //    private long size;
 
-    public JournalEntry(String key) {
+    public CacheEntry(String key) {
         this.key = key;
     }
-    public JournalEntry(String key, long expiryTime) {
+    public CacheEntry(String key, long expiryTime) {
         this.key = key;
         this.expiryTime = expiryTime;
     }

@@ -5,8 +5,8 @@ import com.im4j.kakacache.core.cache.disk.converter.IDiskConverter;
 import com.im4j.kakacache.core.cache.disk.sink.Sink;
 import com.im4j.kakacache.core.cache.disk.source.Source;
 import com.im4j.kakacache.core.cache.disk.storage.IDiskStorage;
-import com.im4j.kakacache.core.cache.journal.IJournal;
-import com.im4j.kakacache.core.cache.journal.JournalEntry;
+import com.im4j.kakacache.core.cache.disk.journal.IDiskJournal;
+import com.im4j.kakacache.core.cache.CacheEntry;
 import com.im4j.kakacache.core.exception.CacheException;
 import com.im4j.kakacache.core.utils.Utils;
 
@@ -19,15 +19,21 @@ import java.io.IOException;
 public final class DiskCache {
 
     private final IDiskStorage mStorage;
-    private final IJournal mJournal;
+    private final IDiskJournal mJournal;
     private final IDiskConverter mConverter;
+    private final long mMaxSize;
+    private final long mMaxQuantity;
 
     public DiskCache(IDiskStorage storage,
-                     IJournal journal,
-                     IDiskConverter converter) {
+                     IDiskJournal journal,
+                     IDiskConverter converter,
+                     long maxSize,
+                     long maxQuantity) {
         this.mStorage = storage;
         this.mJournal = journal;
         this.mConverter = converter;
+        this.mMaxSize = maxSize;
+        this.mMaxQuantity = maxQuantity;
     }
 
     /**
@@ -39,7 +45,7 @@ public final class DiskCache {
     public <T> T load(String key) throws CacheException {
         Utils.checkNotNull(key);
 
-        JournalEntry entry = mJournal.get(key);
+        CacheEntry entry = mJournal.get(key);
         if (entry == null) {
             return null;
         }
@@ -82,7 +88,7 @@ public final class DiskCache {
         } catch (IOException e) {
         }
 
-        mJournal.put(key, new JournalEntry(key, expires));
+        mJournal.put(key, new CacheEntry(key, expires));
 
         // 清理无用数据
         clearUnused();
@@ -119,14 +125,23 @@ public final class DiskCache {
      */
     public void clearUnused() {
         // 清理过期
-        for (JournalEntry entry : mJournal.snapshot()) {
+        for (CacheEntry entry : mJournal.snapshot()) {
             if (entry.isExpiry()) {
                 remove(entry.getKey());
             }
         }
 
         // 清理超出缓存
-        mJournal.clean(mStorage);
+        if (mMaxSize != 0) {
+            while (mMaxSize < getTotalSize()) {
+                remove(mJournal.getLoseKey());
+            }
+        }
+        if (mMaxQuantity != 0) {
+            while (mMaxQuantity < getTotalQuantity()) {
+                remove(mJournal.getLoseKey());
+            }
+        }
     }
 
     /**

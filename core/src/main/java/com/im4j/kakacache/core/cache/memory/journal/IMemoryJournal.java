@@ -1,20 +1,20 @@
-package com.im4j.kakacache.core.cache.journal;
+package com.im4j.kakacache.core.cache.memory.journal;
 
-import com.im4j.kakacache.core.cache.IStorage;
+import com.im4j.kakacache.core.cache.CacheEntry;
 import com.im4j.kakacache.core.exception.CacheException;
 
 import java.io.Closeable;
 import java.util.List;
 
 /**
- * 日志
+ * 内存缓存日志
  * @version alafighting 2016-04
  */
-public interface IJournal extends Closeable {
+public interface IMemoryJournal extends Closeable {
 
-    JournalEntry get(String key);
+    CacheEntry get(String key);
 
-    void put(String key, JournalEntry entry);
+    void put(String key, CacheEntry entry);
 
     boolean containsKey(String key);
 
@@ -28,8 +28,6 @@ public interface IJournal extends Closeable {
 
     void clear();
 
-    void clean(IStorage storage);
-
-    List<JournalEntry> snapshot();
+    List<CacheEntry> snapshot();
 
 }

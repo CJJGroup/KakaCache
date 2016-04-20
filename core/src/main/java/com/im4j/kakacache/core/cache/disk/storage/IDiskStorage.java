@@ -1,6 +1,5 @@
 package com.im4j.kakacache.core.cache.disk.storage;
 
-import com.im4j.kakacache.core.cache.IStorage;
 import com.im4j.kakacache.core.cache.disk.sink.Sink;
 import com.im4j.kakacache.core.cache.disk.source.Source;
 import com.im4j.kakacache.core.exception.CacheException;
@@ -12,7 +11,7 @@ import java.util.Map;
  * 磁盘存储
  * @version alafighting 2016-04
  */
-public interface IDiskStorage extends Closeable, IStorage {
+public interface IDiskStorage extends Closeable {
 
     /**
      * 加载数据源

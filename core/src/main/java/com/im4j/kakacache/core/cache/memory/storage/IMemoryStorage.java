@@ -1,6 +1,5 @@
 package com.im4j.kakacache.core.cache.memory.storage;
 
-import com.im4j.kakacache.core.cache.IStorage;
 import com.im4j.kakacache.core.exception.CacheException;
 
 import java.io.Closeable;
@@ -10,7 +9,7 @@ import java.util.Map;
  * 内存存储
  * @author alafighting 2016-04
  */
-public interface IMemoryStorage extends Closeable, IStorage {
+public interface IMemoryStorage extends Closeable {
 
     /**
      * 读取

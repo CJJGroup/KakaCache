@@ -3,7 +3,8 @@ package com.im4j.kakacache.core.cache;
 import com.im4j.kakacache.core.cache.disk.DiskCache;
 import com.im4j.kakacache.core.cache.disk.converter.IDiskConverter;
 import com.im4j.kakacache.core.cache.disk.storage.IDiskStorage;
-import com.im4j.kakacache.core.cache.journal.IJournal;
+import com.im4j.kakacache.core.cache.disk.journal.IDiskJournal;
+import com.im4j.kakacache.core.cache.memory.journal.IMemoryJournal;
 import com.im4j.kakacache.core.cache.memory.storage.IMemoryStorage;
 import com.im4j.kakacache.core.cache.memory.MemoryCache;
 import com.im4j.kakacache.core.exception.CacheException;
@@ -121,11 +122,15 @@ public class CacheCore {
      */
     public static class Builder {
         private IMemoryStorage memory;
-        private IJournal memoryJournal;
+        private IMemoryJournal memoryJournal;
+        private long memoryMaxSize;
+        private long memoryMaxQuantity;
 
         private IDiskStorage disk;
-        private IJournal diskJournal;
-        private IDiskConverter converter;
+        private IDiskJournal diskJournal;
+        private IDiskConverter diskConverter;
+        private long diskMaxSize;
+        private long diskMaxQuantity;
 
         public Builder() {
         }
@@ -135,8 +140,14 @@ public class CacheCore {
             return this;
         }
 
-        public Builder memoryJournal(IJournal journal) {
+        public Builder memoryJournal(IMemoryJournal journal) {
             this.memoryJournal = Utils.checkNotNull(journal);
+            return this;
+        }
+
+        public Builder memoryMax(long maxSize, long maxQuantity) {
+            this.memoryMaxSize = maxSize;
+            this.memoryMaxQuantity = maxQuantity;
             return this;
         }
 
@@ -145,20 +156,26 @@ public class CacheCore {
             return this;
         }
 
-        public Builder diskJournal(IJournal journal) {
+        public Builder diskJournal(IDiskJournal journal) {
             this.diskJournal = Utils.checkNotNull(journal);
             return this;
         }
 
-        public Builder converter(IDiskConverter converter) {
-            this.converter = Utils.checkNotNull(converter);
+        public Builder diskConverter(IDiskConverter converter) {
+            this.diskConverter = Utils.checkNotNull(converter);
+            return this;
+        }
+
+        public Builder diskMax(long maxSize, long maxQuantity) {
+            this.diskMaxSize = maxSize;
+            this.diskMaxQuantity = maxQuantity;
             return this;
         }
 
         public CacheCore create() {
             // TODO 根据配置，选择合适的构造方法
-            return new CacheCore(new MemoryCache(memory, memoryJournal),
-                    new DiskCache(disk, diskJournal, converter));
+            return new CacheCore(new MemoryCache(memory, memoryJournal, memoryMaxSize, memoryMaxQuantity),
+                    new DiskCache(disk, diskJournal, diskConverter, diskMaxSize, diskMaxQuantity));
         }
     }
 
