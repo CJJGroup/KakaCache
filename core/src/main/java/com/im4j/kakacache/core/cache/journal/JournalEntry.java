@@ -1,4 +1,4 @@
-package com.im4j.kakacache.core.cache.disk.storage;
+package com.im4j.kakacache.core.cache.journal;
 
 /**
  * 日志项

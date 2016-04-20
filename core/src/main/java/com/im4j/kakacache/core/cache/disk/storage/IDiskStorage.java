@@ -1,5 +1,6 @@
 package com.im4j.kakacache.core.cache.disk.storage;
 
+import com.im4j.kakacache.core.cache.IStorage;
 import com.im4j.kakacache.core.cache.disk.sink.Sink;
 import com.im4j.kakacache.core.cache.disk.source.Source;
 import com.im4j.kakacache.core.exception.CacheException;
@@ -11,27 +12,20 @@ import java.util.Map;
  * 磁盘存储
  * @version alafighting 2016-04
  */
-public interface IDiskStorage extends Closeable {
+public interface IDiskStorage extends Closeable, IStorage {
 
     /**
-     * 读取
+     * 加载数据源
      * @param key
      * @return
      */
-    Source get(String key) throws CacheException;
+    Source load(String key) throws CacheException;
 
     /**
-     * 保存
+     * 创建数据槽
      * @param key
      */
     Sink create(String key) throws CacheException;
-
-    /**
-     * // TODO 更合理的方法解释
-     * 获取末尾的Key
-     * @return 末尾的Key，一般用于存储空间不足时清理空间
-     */
-    String getLastKey() throws CacheException;
 
     /**
      * 快照
@@ -69,5 +63,11 @@ public interface IDiskStorage extends Closeable {
      * @return 单位:byte
      */
     long getTotalSize();
+
+    /**
+     * 缓存总数目
+     * @return 单位:缓存个数
+     */
+    long getTotalQuantity();
 
 }

@@ -1,33 +1,24 @@
-package com.im4j.kakacache.core.cache.disk;
+package com.im4j.kakacache.core.cache.memory;
 
-import com.google.gson.reflect.TypeToken;
-import com.im4j.kakacache.core.cache.disk.converter.IDiskConverter;
-import com.im4j.kakacache.core.cache.disk.sink.Sink;
-import com.im4j.kakacache.core.cache.disk.source.Source;
-import com.im4j.kakacache.core.cache.disk.storage.IDiskStorage;
 import com.im4j.kakacache.core.cache.journal.IJournal;
 import com.im4j.kakacache.core.cache.journal.JournalEntry;
+import com.im4j.kakacache.core.cache.memory.storage.IMemoryStorage;
 import com.im4j.kakacache.core.exception.CacheException;
 import com.im4j.kakacache.core.utils.Utils;
 
-import java.io.IOException;
-
 /**
- * 磁盘缓存
+ * 内存缓存
  * @version 0.1 king 2016-04
  */
-public final class DiskCache {
+public final class MemoryCache {
 
-    private final IDiskStorage mStorage;
+    private final IMemoryStorage mStorage;
     private final IJournal mJournal;
-    private final IDiskConverter mConverter;
 
-    public DiskCache(IDiskStorage storage,
-                     IJournal journal,
-                     IDiskConverter converter) {
+    public MemoryCache(IMemoryStorage storage,
+                       IJournal journal) {
         this.mStorage = storage;
         this.mJournal = journal;
-        this.mConverter = converter;
     }
 
     /**
@@ -51,13 +42,7 @@ public final class DiskCache {
         }
 
         // 读取缓存
-        Source source = mStorage.load(key);
-        T value = (T) mConverter.load(source, new TypeToken<T>(){}.getType());
-        try {
-            source.close();
-        } catch (IOException e) {
-        }
-        return value;
+        return (T) mStorage.load(key);
     }
 
     /**
@@ -75,13 +60,7 @@ public final class DiskCache {
         // TODO 先写入，后清理。会超出限定条件，需要一定交换空间
 
         // 写入缓存
-        Sink sink = mStorage.create(key);
-        mConverter.writer(sink, value);
-        try {
-            sink.close();
-        } catch (IOException e) {
-        }
-
+        mStorage.save(key, value);
         mJournal.put(key, new JournalEntry(key, expires));
 
         // 清理无用数据
