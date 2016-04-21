@@ -62,7 +62,7 @@ public final class DiskCache extends Cache {
      */
     @Override
     protected <T> void doSave(String key, T value, int expires, CacheTarget target) throws CacheException {
-        if (target == null || target == CacheTarget.Memory) {
+        if (target == null || target == CacheTarget.NONE || target == CacheTarget.Memory) {
             return;
         }
 

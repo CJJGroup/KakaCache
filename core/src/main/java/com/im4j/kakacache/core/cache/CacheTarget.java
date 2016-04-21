@@ -6,6 +6,7 @@ package com.im4j.kakacache.core.cache;
  */
 public enum CacheTarget {
 
+    NONE,
     Memory,
     Disk,
     MemoryDisk;

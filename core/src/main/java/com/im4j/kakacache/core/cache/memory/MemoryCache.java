@@ -36,7 +36,7 @@ public final class MemoryCache extends Cache {
 
     @Override
     protected <T> void doSave(String key, T value, int expires, CacheTarget target) throws CacheException {
-        if (target == null || target == CacheTarget.Disk) {
+        if (target == null || target == CacheTarget.NONE || target == CacheTarget.Disk) {
             return;
         }
 
