@@ -4,8 +4,8 @@
 
 **说明：** 实现类放在对应包的impl子包下【如: disk.storage.impl/FileStorage.java】
 
-## core    数据存储，负责数据的读取和写入，不关心线程等
-### disk
+## - core    数据存储，负责数据的读取和写入，不关心线程等
+### - disk
 #### disk.storage       磁盘存储
 - FileStorage
 
@@ -34,7 +34,7 @@
 - StringSource
 - ByteArraySource
 
-### memory
+### - memory
 #### memory.storage     内存存储
 - FileStorage
 
