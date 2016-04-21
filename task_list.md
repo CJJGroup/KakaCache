@@ -8,6 +8,7 @@
 ### disk
 #### disk.storage       磁盘存储
 - FileStorage
+
 #### disk.journal       磁盘日志
 - <s>FileJournal</s>
 - <s>DBJournal</s>
@@ -22,10 +23,12 @@
 - ParcelableConverter
 - KryoConverter
 - JsonConverter
+
 #### disk.sink          数据槽
 - FileSink
 - StringSink
 - ByteArraySink
+
 #### disk.source        数据源
 - FileSource
 - StringSource
@@ -34,6 +37,7 @@
 ### memory
 #### memory.storage     内存存储
 - FileStorage
+
 #### memory.journal     内存日志
 - <s>MapJournal</s>
 
