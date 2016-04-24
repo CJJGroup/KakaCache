@@ -10,9 +10,6 @@
 - FileStorage
 
 #### disk.journal       磁盘日志
-- <s>FileJournal</s>
-- <s>DBJournal</s>
-
 - FIFOJournal           先进先出算法
 - LFUJournal            最近最少使用算法
 - LRUJournal            最久未使用算法
@@ -39,8 +36,6 @@
 - FileStorage
 
 #### memory.journal     内存日志
-- <s>MapJournal</s>
-
 - FIFOJournal           先进先出算法
 - LFUJournal            最近最少使用算法
 - LRUJournal            最久未使用算法
