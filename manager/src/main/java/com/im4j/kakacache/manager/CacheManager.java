@@ -94,10 +94,6 @@ public abstract class CacheManager {
             return new RxJavaCacheManager.Builder(cache);
         }
 
-        public RxAndroidCacheManager.Builder rxandroid() {
-            return new RxAndroidCacheManager.Builder(cache);
-        }
-
     }
 
 }

@@ -13,7 +13,6 @@ import java.util.concurrent.Executor;
 /**
  * 回调模式缓存管理
  * @version alafighting 2016-04
- * // TODO 中断？
  */
 public class CallbackCacheManager extends CacheManager {
 

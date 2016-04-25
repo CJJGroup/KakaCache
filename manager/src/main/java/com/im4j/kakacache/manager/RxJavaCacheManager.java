@@ -9,11 +9,10 @@ import rx.Subscriber;
 import rx.schedulers.Schedulers;
 
 /**
- * RxAndroid模式缓存管理
+ * RxJava模式缓存管理
  * @version alafighting 2016-04
- * // TODO 线程优先级、线程池大小、中断？
  */
-public class RxAndroidCacheManager extends CacheManager {
+public class RxJavaCacheManager extends CacheManager {
 
     private static abstract class SimpleSubscribe<T> implements rx.Observable.OnSubscribe<T> {
         @Override
@@ -31,7 +30,7 @@ public class RxAndroidCacheManager extends CacheManager {
     }
 
 
-    public RxAndroidCacheManager(CacheCore cache) {
+    public RxJavaCacheManager(CacheCore cache) {
         super(cache);
     }
 
@@ -71,7 +70,7 @@ public class RxAndroidCacheManager extends CacheManager {
      * @param key
      * @return
      */
-    public rx.Observable<Boolean> containsKey(final String key, final OnFinder finder) {
+    public rx.Observable<Boolean> containsKey(final String key) {
         return rx.Observable.create(new SimpleSubscribe<Boolean>() {
             @Override
             void execute(Subscriber<? super Boolean> subscriber) {
@@ -118,8 +117,8 @@ public class RxAndroidCacheManager extends CacheManager {
             super(cache);
         }
 
-        public RxAndroidCacheManager create() {
-            return new RxAndroidCacheManager(cache);
+        public RxJavaCacheManager create() {
+            return new RxJavaCacheManager(cache);
         }
     }
 
