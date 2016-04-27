@@ -32,7 +32,7 @@ public abstract class CacheManager {
      * @return
      * // TODO throw Exception ?
      */
-    public boolean _containsKey(String key) {
+    boolean _containsKey(String key) {
         return cache.containsKey(key);
     }
 

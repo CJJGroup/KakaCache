@@ -1,4 +1,4 @@
-package com.im4j.kakacache.manager.callback.listener;
+package com.im4j.kakacache.manager.callback;
 
 /**
  * 失败回调

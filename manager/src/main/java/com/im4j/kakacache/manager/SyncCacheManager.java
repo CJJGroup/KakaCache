@@ -17,7 +17,7 @@ public class SyncCacheManager extends CacheManager {
     /**
      * 读取
      */
-    <T> T load(String key) throws CacheException {
+    public <T> T load(String key) throws CacheException {
         return super._load(key);
     }
 
@@ -35,7 +35,7 @@ public class SyncCacheManager extends CacheManager {
      * 保存
      * @param expires 有效期（单位：秒）
      */
-    <T> void save(String key, T value, int expires, CacheTarget target) throws CacheException {
+    public <T> void save(String key, T value, int expires, CacheTarget target) throws CacheException {
         super._save(key, value, expires, target);
     }
 

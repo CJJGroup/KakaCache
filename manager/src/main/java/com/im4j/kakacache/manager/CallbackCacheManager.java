@@ -5,8 +5,8 @@ import com.im4j.kakacache.common.exception.NotFoundException;
 import com.im4j.kakacache.common.utils.Utils;
 import com.im4j.kakacache.core.cache.CacheCore;
 import com.im4j.kakacache.core.cache.CacheTarget;
-import com.im4j.kakacache.manager.callback.listener.OnCallListener;
-import com.im4j.kakacache.manager.callback.listener.OnFailure;
+import com.im4j.kakacache.manager.callback.OnCallbackListener;
+import com.im4j.kakacache.manager.callback.OnFailure;
 
 import java.util.concurrent.Executor;
 
@@ -27,7 +27,7 @@ public class CallbackCacheManager extends CacheManager {
     /**
      * 读取
      */
-    public <T> void load(final String key, final OnCallListener<T> loader, final OnFailure failure) {
+    public <T> void load(final String key, final OnCallbackListener<T> loader, final OnFailure failure) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -57,7 +57,7 @@ public class CallbackCacheManager extends CacheManager {
      */
     public <T> void save(final String key, final T value, final int expires,
                          final CacheTarget target,
-                         final OnCallListener<Boolean> saver,
+                         final OnCallbackListener<Boolean> saver,
                          final OnFailure failure) {
         executor.execute(new Runnable() {
             @Override
@@ -83,7 +83,7 @@ public class CallbackCacheManager extends CacheManager {
      * @param key
      * @return
      */
-    public void containsKey(final String key, final OnCallListener<Boolean> finder) {
+    public void containsKey(final String key, final OnCallbackListener<Boolean> finder) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -97,7 +97,7 @@ public class CallbackCacheManager extends CacheManager {
      * 删除缓存
      * @param key
      */
-    public void remove(final String key, final OnCallListener<Boolean> remove) {
+    public void remove(final String key, final OnCallbackListener<Boolean> remove) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -120,7 +120,7 @@ public class CallbackCacheManager extends CacheManager {
     /**
      * 清空缓存
      */
-    public void clear(final OnCallListener<Boolean> clear) {
+    public void clear(final OnCallbackListener<Boolean> clear) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
