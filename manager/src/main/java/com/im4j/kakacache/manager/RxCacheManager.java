@@ -12,7 +12,7 @@ import rx.schedulers.Schedulers;
  * RxJava模式缓存管理
  * @version alafighting 2016-04
  */
-public class RxJavaCacheManager extends CacheManager {
+public class RxCacheManager extends CacheManager {
 
     private static abstract class SimpleSubscribe<T> implements rx.Observable.OnSubscribe<T> {
         @Override
@@ -30,7 +30,7 @@ public class RxJavaCacheManager extends CacheManager {
     }
 
 
-    public RxJavaCacheManager(CacheCore cache) {
+    public RxCacheManager(CacheCore cache) {
         super(cache);
     }
 
@@ -117,8 +117,8 @@ public class RxJavaCacheManager extends CacheManager {
             super(cache);
         }
 
-        public RxJavaCacheManager create() {
-            return new RxJavaCacheManager(cache);
+        public RxCacheManager create() {
+            return new RxCacheManager(cache);
         }
     }
 
