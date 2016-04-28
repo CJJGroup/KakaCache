@@ -90,8 +90,8 @@ public abstract class CacheManager {
             return new CallbackCacheManager.Builder(cache);
         }
 
-        public RxJavaCacheManager.Builder rxjava() {
-            return new RxJavaCacheManager.Builder(cache);
+        public RxCacheManager.Builder rxjava() {
+            return new RxCacheManager.Builder(cache);
         }
 
     }

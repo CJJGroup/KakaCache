@@ -1,5 +1,6 @@
 package com.im4j.kakacache.manager;
 
+import com.im4j.kakacache.common.exception.ArgumentException;
 import com.im4j.kakacache.common.exception.Exception;
 import com.im4j.kakacache.common.exception.NotFoundException;
 import com.im4j.kakacache.common.utils.Utils;
@@ -28,6 +29,13 @@ public class CallbackCacheManager extends CacheManager {
      * 读取
      */
     public <T> void load(final String key, final OnCallbackListener<T> loader, final OnFailure failure) {
+        if (loader == null) {
+            throw new ArgumentException("loader can not be null");
+        }
+        if (failure == null) {
+            throw new ArgumentException("failure can not be null");
+        }
+
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -59,6 +67,13 @@ public class CallbackCacheManager extends CacheManager {
                          final CacheTarget target,
                          final OnCallbackListener<Boolean> saver,
                          final OnFailure failure) {
+        if (saver == null) {
+            throw new ArgumentException("loader can not be null");
+        }
+        if (failure == null) {
+            throw new ArgumentException("failure can not be null");
+        }
+
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -84,6 +99,10 @@ public class CallbackCacheManager extends CacheManager {
      * @return
      */
     public void containsKey(final String key, final OnCallbackListener<Boolean> finder) {
+        if (finder == null) {
+            throw new ArgumentException("finder can not be null");
+        }
+
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -98,6 +117,10 @@ public class CallbackCacheManager extends CacheManager {
      * @param key
      */
     public void remove(final String key, final OnCallbackListener<Boolean> remove) {
+        if (remove == null) {
+            throw new ArgumentException("remove can not be null");
+        }
+
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -121,6 +144,10 @@ public class CallbackCacheManager extends CacheManager {
      * 清空缓存
      */
     public void clear(final OnCallbackListener<Boolean> clear) {
+        if (clear == null) {
+            throw new ArgumentException("clear can not be null");
+        }
+
         executor.execute(new Runnable() {
             @Override
             public void run() {
